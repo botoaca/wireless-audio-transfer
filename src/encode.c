@@ -1,7 +1,6 @@
 #include "encode.h"
 
-void encode(struct args_t args)
-{
+void encode(struct args_t args) {
     int max_calculated_freq = 0;
     struct freq_byte_pair_t* map = freq_byte_map_create(10, /* offset */
                                                         10, /* start_freq */
@@ -14,14 +13,20 @@ void encode(struct args_t args)
     if (!input_file) { printf("Failed to open input file\n"); return; }
     fseek(input_file, 0, SEEK_END);                         // move cursor to end
     size_t input_file_size = ftell(input_file);             // get position into var
-    fseek(input_file, 0, input_file_size);                  // move cursor to start
+    fseek(input_file, 0, SEEK_SET);                         // move cursor to start
     input_file_data = malloc(input_file_size);              // allocate buffer
     fread(input_file_data, 1, input_file_size, input_file); // read into buffer
     fclose(input_file);                                     // close file
 
     // create frequency pair array
-    struct freq_interval_t* freqs_to_encode = malloc(sizeof(struct freq_interval_t) * input_file_size);
-    for (int i = 0; i < input_file_size; i++) {
+    int file_name_size = sizeof(args.file) - 1;
+    struct freq_interval_t* freqs_to_encode = malloc(sizeof(struct freq_interval_t) * input_file_size + 1 + file_name_size);
+    freqs_to_encode[0] = map[find_idx_by_byte(map, ((char)file_name_size))].interval; // encode file name size
+    for (int i = 1; i < file_name_size + 1; i++) {
+        int idx = find_idx_by_byte(map, ((char*)args.file)[i - 1]);                    // encode file name
+        freqs_to_encode[i] = map[idx].interval;
+    }
+    for (int i = file_name_size + 1; i < input_file_size; i++) {                       // encode file contents
         int idx = find_idx_by_byte(map, ((char*)input_file_data)[i]);
         freqs_to_encode[i] = map[idx].interval;
     }
