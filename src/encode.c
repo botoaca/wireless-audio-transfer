@@ -4,7 +4,6 @@ void encode(struct args_t args) {
     int max_calculated_freq = 0;
     struct freq_byte_pair_t* map = freq_byte_map_create(10, /* offset */
                                                         10, /* start_freq */
-                                                        5,  /* deadzone */
                                                         &max_calculated_freq);
     
     FILE* input_file = fopen(args.file, "rb");              // open file
@@ -19,15 +18,15 @@ void encode(struct args_t args) {
     fclose(input_file);                                     // close file
 
     // create frequency pair array
-    int file_name_size = sizeof(args.file) - 1;
+    int file_name_size = sizeof(args.file);
     struct freq_interval_t* freqs_to_encode = malloc(sizeof(struct freq_interval_t) * input_file_size + 1 + file_name_size);
-    freqs_to_encode[0] = map[find_idx_by_byte(map, ((char)file_name_size))].interval; // encode file name size
+    freqs_to_encode[0] = map[find_idx_by_byte(map, ((unsigned char)file_name_size))].interval;  // encode file name size
     for (int i = 1; i < file_name_size + 1; i++) {
-        int idx = find_idx_by_byte(map, ((char*)args.file)[i - 1]);                    // encode file name
+        int idx = find_idx_by_byte(map, ((unsigned char*)args.file)[i - 1]);                    // encode file name
         freqs_to_encode[i] = map[idx].interval;
     }
     for (int i = file_name_size + 1; i < input_file_size; i++) {                       // encode file contents
-        int idx = find_idx_by_byte(map, ((char*)input_file_data)[i]);
+        int idx = find_idx_by_byte(map, ((unsigned char*)input_file_data)[i]);
         freqs_to_encode[i] = map[idx].interval;
     }
     free(input_file_data);
