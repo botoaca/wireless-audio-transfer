@@ -79,7 +79,6 @@ void decode(struct args_t args) {
     unsigned char* final_bytes = malloc(num_seconds * sizeof(unsigned char));
     for (int i = 0; i < num_seconds; i++) {
         int idx = find_idx_by_freq(map, final_frequencies[i]);
-        printf("freq: %d\tbyte: %c\tidx: %d\n", final_frequencies[i], map[idx].byte, idx);
         final_bytes[i] = map[idx].byte;
     }
 
