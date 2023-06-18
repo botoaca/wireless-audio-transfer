@@ -4,7 +4,6 @@ void encode(struct args_t args) {
     int max_calculated_freq = 0;
     struct freq_byte_pair_t* map = freq_byte_map_create(10, /* offset */
                                                         10, /* start_freq */
-                                                        5,  /* deadzone */
                                                         &max_calculated_freq);
     
     FILE* input_file = fopen(args.file, "rb");              // open file
@@ -19,16 +18,16 @@ void encode(struct args_t args) {
     fclose(input_file);                                     // close file
 
     // create frequency pair array
-    int file_name_size = sizeof(args.file) - 1;
-    struct freq_interval_t* freqs_to_encode = malloc(sizeof(struct freq_interval_t) * input_file_size + 1 + file_name_size);
-    freqs_to_encode[0] = map[find_idx_by_byte(map, ((char)file_name_size))].interval; // encode file name size
+    int file_name_size = sizeof(args.file);
+    struct freq_interval_t* freqs_to_encode = malloc(sizeof(struct freq_interval_t) * (input_file_size + 1 + file_name_size));
+    freqs_to_encode[0] = map[find_idx_by_byte(map, ((unsigned char)file_name_size))].interval;  // encode file name size
     for (int i = 1; i < file_name_size + 1; i++) {
-        int idx = find_idx_by_byte(map, ((char*)args.file)[i - 1]);                    // encode file name
+        int idx = find_idx_by_byte(map, ((unsigned char*)args.file)[i - 1]);                    // encode file name
         freqs_to_encode[i] = map[idx].interval;
     }
-    for (int i = file_name_size + 1; i < input_file_size; i++) {                       // encode file contents
-        int idx = find_idx_by_byte(map, ((char*)input_file_data)[i]);
-        freqs_to_encode[i] = map[idx].interval;
+    for (int i = 0; i < input_file_size; i++) {                                                 // encode file contents
+        int idx = find_idx_by_byte(map, ((unsigned char*)input_file_data)[i]);
+        freqs_to_encode[i + file_name_size + 1] = map[idx].interval;
     }
     free(input_file_data);
 
@@ -59,10 +58,10 @@ void encode(struct args_t args) {
     };
     fwrite(&wav_header, 1, sizeof(struct wav_header_t), output_file);
 
-    for (int i = 0; i < input_file_size; i++) {
+    for (int i = 0; i < (input_file_size + 1 + file_name_size);  i++) {
+        float avg_freq = (freqs_to_encode[i].min + freqs_to_encode[i].max) / 2.0f;
+        sine_oscillator_set_frequency(&oscillator, avg_freq);
         for (int j = 0; j < oscillator.sample_rate * args.spf; j++) {
-            float avg_freq = (freqs_to_encode[i].min + freqs_to_encode[i].max) / 2.0f;
-            sine_oscillator_set_frequency(&oscillator, avg_freq);
             float sample = sine_oscillator_process(&oscillator);
             int sample_int = (int)(sample * oscillator.max_amplitude);
             fwrite(&sample_int, 1, 2 /* first two bytes of the sample */, output_file);
