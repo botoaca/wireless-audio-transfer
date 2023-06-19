@@ -1,6 +1,4 @@
 #include "sine_oscillator.h"
-#define _USE_MATH_DEFINES
-#include <math.h>
 
 struct sine_oscillator_t sine_oscillator_create(float frequency, float amplitude, int sample_rate, int bit_depth) {
     struct sine_oscillator_t ret;
