@@ -1,6 +1,9 @@
 #ifndef SINE_OSCILLATOR_H
 #define SINE_OSCILLATOR_H
 
+#define _USE_MATH_DEFINES
+#include <math.h>
+
 struct sine_oscillator_t {
     float frequency, amplitude, angle, offset, max_amplitude;
     int sample_rate, bit_depth;
