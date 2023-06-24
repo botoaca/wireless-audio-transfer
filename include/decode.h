@@ -6,6 +6,7 @@
 #include <string.h>
 #include <stdint.h>
 
+#include "util.h"
 #include "args.h"
 #include "freq_byte_map.h"
 #include "wav_header.h"

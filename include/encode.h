@@ -5,6 +5,7 @@
 #include <stdio.h>
 #include <string.h>
 
+#include "util.h"
 #include "args.h"
 #include "freq_byte_map.h"
 #include "sine_oscillator.h"
