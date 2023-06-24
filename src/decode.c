@@ -93,10 +93,21 @@ void decode(struct args_t args) {
     final_bytes += output_filename_size;
 
     // write output file
-    FILE* output_file = fopen(output_filename, "wb");
+    char* ls = strrchr(args.file, '/');
+    if (ls == NULL) ls = strrchr(args.file, '\\');
+    char* output_path;
+    if (ls == NULL) {
+        output_path = malloc(strlen(output_filename) + 1);
+        strcpy(output_path, output_filename);
+    } else {
+        size_t dir_len = ls - args.file + 1;
+        output_path = malloc(dir_len + output_filename_size);
+        strncpy(output_path, args.file, dir_len);
+        output_path[dir_len] = '\0';
+        strcat(output_path, output_filename);
+    }
+    FILE* output_file = fopen(output_path, "wb");
     fwrite(final_bytes, 1, num_seconds - output_filename_size - 1, output_file);
-    char* output_file_path = malloc(1024);
-    realpath(output_filename, output_file_path);
-    printf("%s", output_file_path);
+    printf("%s", realpath(output_path, NULL));
     fclose(output_file);
 }
