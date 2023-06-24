@@ -19,10 +19,18 @@ void encode(struct args_t args) {
 
     // create frequency pair array
     int file_name_size = sizeof(args.file);
+    char* file_name_no_path = args.file;
+    for (int i = strlen(file_name_no_path) - 1; i >= 0; i--) {
+        if (file_name_no_path[i] == '/' || file_name_no_path[i] == '\\') {
+            file_name_no_path = &file_name_no_path[i + 1];
+            break;
+        }
+    }
+
     struct freq_interval_t* freqs_to_encode = malloc(sizeof(struct freq_interval_t) * (input_file_size + 1 + file_name_size));
     freqs_to_encode[0] = map[find_idx_by_byte(map, ((unsigned char)file_name_size))].interval;  // encode file name size
     for (int i = 1; i < file_name_size + 1; i++) {
-        int idx = find_idx_by_byte(map, ((unsigned char*)args.file)[i - 1]);                    // encode file name
+        int idx = find_idx_by_byte(map, ((unsigned char*)file_name_no_path)[i - 1]);            // encode file name
         freqs_to_encode[i] = map[idx].interval;
     }
     for (int i = 0; i < input_file_size; i++) {                                                 // encode file contents
@@ -68,8 +76,6 @@ void encode(struct args_t args) {
         }
     }
 
-    char* output_file_path = malloc(1024);
-    realpath(output_file_name, output_file_path);
-    printf("%s", output_file_path);
+    printf("%s", realpath(output_file_name, NULL));
     fclose(output_file);
 }
