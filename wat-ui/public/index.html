@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <title>Wireless Audio Transfer</title>
+        <link rel="stylesheet" href="css/styles.css">
+    </head>
+    <body>
+    <div class="container">
+        <div style="text-align: center;">
+            <fieldset>
+                <h3>Wireless Audio Transfer</h3>
+                <br/>
+                <fieldset>
+                    <legend>Mode</legend> 
+                    <select onchange="changedMode()" name="mode" id="mode">
+                        <option value="encode">Encode</option>
+                        <option value="decode">Decode</option>
+                    </select>
+                </fieldset>
+                <br/>
+                <fieldset>
+                    <legend>Seconds per frequency</legend>
+                    <input type="number" name="spf" id="spf" step="0.1" min="0.1" value="1">
+                </fieldset>
+                <br/>
+                <fieldset>
+                    <legend>File</legend>
+                    <input type="file" name="file" id="file">
+                    <div style="display: none;" id="recordAudio">
+                        <p id="fileOrTxt">or</p>
+                        <input id="audioRecBtn" type="button" value="Start Recording">
+                        <br/><br/>
+                        <fieldset id="audioRecordings">
+                            <legend>Recordings</legend>
+                        </fieldset>
+                    </div>
+                </fieldset>
+                <br/>
+                <input type="button" onclick="submit()" value="Submit">
+                
+                <br/>
+            </fieldset>
+        </div>
+    </div>
+    <script src="js/index.js"></script>
+</body>
+</html>
