@@ -68,5 +68,8 @@ void encode(struct args_t args) {
         }
     }
 
+    char* output_file_path = malloc(1024);
+    realpath(output_file_name, output_file_path);
+    printf("%s", output_file_path);
     fclose(output_file);
 }

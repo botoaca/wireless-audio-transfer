@@ -95,5 +95,8 @@ void decode(struct args_t args) {
     // write output file
     FILE* output_file = fopen(output_filename, "wb");
     fwrite(final_bytes, 1, num_seconds - output_filename_size - 1, output_file);
+    char* output_file_path = malloc(1024);
+    realpath(output_filename, output_file_path);
+    printf("%s", output_file_path);
     fclose(output_file);
 }

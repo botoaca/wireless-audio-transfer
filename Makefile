@@ -2,10 +2,7 @@ C = gcc
 CFLAGS = -Wall -Iinclude
 FFTFLAGS = -Ikissfft
 
-all: build build/output
-
-build:
-	mkdir build
+all: build/output
 
 build/output: build/main.o build/freq_byte_map.o build/sine_oscillator.o build/encode.o build/decode.o build/kissfft.o
 	$(C) $(CFLAGS) $^ -o $@
