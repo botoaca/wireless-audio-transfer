@@ -1,3 +1,5 @@
+WIP!! not working with microphone transfer yet
+
 # Wireless Audio Transfer
 This project's purpose is to be able to convert binary files into waveform data to be played into the microphone of another device to be decoded from waveform data back into it's original binary format, thus making possbile the transfer of file through audio.
 
