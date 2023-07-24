@@ -82,15 +82,31 @@ void decode(struct args_t args) {
         final_bytes[i] = map[idx].byte;
     }
 
+    // find the first 3 bytes which are the beginning sequence ("W", "A", "T")
+    int start_sequence_idx = 0;
+    for (int i = 0; i < num_seconds; i++) {
+        if (final_bytes[i] == 'W')
+            if (i + 1 < num_seconds && final_bytes[i + 1] == 'A')
+                if (i + 2 < num_seconds && final_bytes[i + 2] == 'T') {
+                    start_sequence_idx = i;
+                    break;
+                }
+    }
+    final_bytes += start_sequence_idx + 3;
+
     // extract output filename size
     int output_filename_size = final_bytes[0];
-    final_bytes += 1;
+    final_bytes++;
 
     // extract output filename
     char* output_filename = malloc(output_filename_size + 1);
     memcpy(output_filename, final_bytes, output_filename_size);
     output_filename[output_filename_size] = '\0';
     final_bytes += output_filename_size;
+
+    // extract output file size
+    int output_file_size = final_bytes[0];
+    final_bytes++;
 
     // write output file
     char* ls = strrchr(args.file, '/');
@@ -107,7 +123,7 @@ void decode(struct args_t args) {
         strcat(output_path, output_filename);
     }
     FILE* output_file = fopen(output_path, "wb");
-    fwrite(final_bytes, 1, num_seconds - output_filename_size - 1, output_file);
+    fwrite(final_bytes, 1, output_file_size, output_file);
     printf("%s", realpath(output_path, NULL));
     fclose(output_file);
 }
