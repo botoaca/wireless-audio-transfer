@@ -11,13 +11,17 @@ const storage = multer.diskStorage({
         });
         cb(null, "uploads-temp/");
     },
-    filename(_req, file = {}, cb) {
+    filename(_req, file, cb) {
         const dn = Date.now();
         fs.mkdir(`uploads-temp/${dn}`, { recursive: true }, (err) => {
-            if (err) console.error(`error creating uploads-temp/${dn} directory: `, err);
+            if (err) {
+                console.error(`error creating uploads-temp/${dn} directory: `, err);
+                return cb(err);
+            }
+            
+            cb(null, `${dn}/${file.originalname}`);
         });
-        cb(null, `${dn}/${file.originalname}`);
-    },
+    },    
 });
 const upload = multer({ storage });
 
@@ -69,7 +73,8 @@ app.post("/process", upload.single("file"), (req, res) => {
 
 app.listen(port, () => {
     console.log(`Listening at http://localhost:${port}`);
-    if (fs.existsSync('./wat-bin/output') || fs.existsSync('./wat-bin/output.*')) {
+    const files = fs.readdirSync('./wat-bin');
+    if (!files.some(file => /^output(\..+)?$/.test(file))) {
         console.error("wat binary not found");
         process.exit(1);
     }

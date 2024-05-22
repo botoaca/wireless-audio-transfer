@@ -82,18 +82,6 @@ void decode(struct args_t args) {
         final_bytes[i] = map[idx].byte;
     }
 
-    // find the first 3 bytes which are the beginning sequence ("W", "A", "T")
-    int start_sequence_idx = 0;
-    for (int i = 0; i < num_seconds; i++) {
-        if (final_bytes[i] == 'W')
-            if (i + 1 < num_seconds && final_bytes[i + 1] == 'A')
-                if (i + 2 < num_seconds && final_bytes[i + 2] == 'T') {
-                    start_sequence_idx = i;
-                    break;
-                }
-    }
-    final_bytes += start_sequence_idx + 3;
-
     // extract output filename size
     int output_filename_size = final_bytes[0];
     final_bytes++;

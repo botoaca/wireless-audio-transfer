@@ -17,7 +17,6 @@ void encode(struct args_t args) {
     fread(input_file_data, 1, input_file_size, input_file); // read into buffer
     fclose(input_file);                                     // close file
 
-    // create frequency pair array
     int file_name_size = sizeof(args.file);
     char* file_name_no_path = args.file;
     for (int i = strlen(file_name_no_path) - 1; i >= 0; i--) {
@@ -27,20 +26,17 @@ void encode(struct args_t args) {
         }
     }
 
-    const int freqs_to_encode_size = input_file_size + file_name_size + 5;
+    const int freqs_to_encode_size = input_file_size + file_name_size + 2;
     struct freq_interval_t* freqs_to_encode = malloc(sizeof(struct freq_interval_t) * (freqs_to_encode_size));
-    freqs_to_encode[0] = map[find_idx_by_byte(map, 'W')].interval;                                                // encode beginning sequence
-    freqs_to_encode[1] = map[find_idx_by_byte(map, 'A')].interval;
-    freqs_to_encode[2] = map[find_idx_by_byte(map, 'T')].interval;
-    freqs_to_encode[3] = map[find_idx_by_byte(map, (unsigned char)file_name_size)].interval;                      // encode file name size
-    for (int i = 4; i < file_name_size + 4; i++) {
-        int idx = find_idx_by_byte(map, ((unsigned char*)file_name_no_path)[i - 4]);                              // encode file name
+    freqs_to_encode[0] = map[find_idx_by_byte(map, (unsigned char)file_name_size)].interval;                      // encode file name size
+    for (int i = 1; i < file_name_size + 1; i++) {
+        int idx = find_idx_by_byte(map, ((unsigned char*)file_name_no_path)[i - 1]);                              // encode file name
         freqs_to_encode[i] = map[idx].interval;
     }
-    freqs_to_encode[file_name_size + 4] = map[find_idx_by_byte(map, (unsigned char)input_file_size)].interval;    // encode file size
+    freqs_to_encode[file_name_size + 1] = map[find_idx_by_byte(map, (unsigned char)input_file_size)].interval;    // encode file size
     for (int i = 0; i < input_file_size; i++) {                                                                   // encode file contents
         int idx = find_idx_by_byte(map, ((unsigned char*)input_file_data)[i]);
-        freqs_to_encode[i + file_name_size + 5] = map[idx].interval;
+        freqs_to_encode[i + file_name_size + 2] = map[idx].interval;
     }
     free(input_file_data);
 
